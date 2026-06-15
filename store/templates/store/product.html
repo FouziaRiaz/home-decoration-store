@@ -1,0 +1,33 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+    
+	<h1 class="heading">
+		<span>I</span>
+		<span>t</span>
+		<span>e</span>
+		<span>m</span>
+		<span>s</span>
+	</h1>
+
+    <div class="row">
+		{% for product in products %}
+		<div class="col-lg-4">
+			<img class="thumbnail image" src="{{product.imageURL}}"> <!--product.image.url is format  but for removing error that is defined in models.py use this format-->
+			<div  class="box-element product">
+				<h6><strong>{{product.name}}</strong></h6>
+				<hr>
+
+                <!--we will give two attribute one for action when the btn is click(may be add or remove) and one to determine which productid is-->
+				<button data-product={{product.id}} data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+				<a class="btn btn-outline-success" href="#">View</a>
+				<h4 style="float: right"><strong>${{product.price|floatformat:2}}</strong></h4>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+
+
+{% endblock content %}
+

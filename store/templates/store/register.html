@@ -1,0 +1,27 @@
+{%  extends 'store/main.html' %}
+
+{% block content %}
+    <div class="wrap"><h2>Register</h2>
+
+    {% if message %}
+    <div>{{message}}</div>
+    {% endif %}
+
+    <form action="{% url 'register' %}" method="post">
+        {% csrf_token %}
+        <input autofocus type="text" name="username" placeholder="Username">
+        <input type="email" name="email" placeholder="Email Address">
+        <input type="password" name="password" placeholder="Password">
+        <input type="password" name="confirmation" placeholder="Confirm Password">
+        <input type="submit" value="Register">
+    </form>
+    <p>Already have an account? <a href="{% url 'login' %}">Log In here.</a></p>
+    </div>
+
+{% endblock content %}
+
+
+
+
+
+

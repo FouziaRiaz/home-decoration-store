@@ -1,0 +1,172 @@
+{% extends 'store/main.html' %}
+{% load static %}
+
+{% block content %}
+ 
+    
+	<!--home section starts-->
+    <section class="home" id="home">
+        <div class="content">
+            <h3>Elevate Your home with Decor!</h3>
+            <p>Explore our trendy and aesthetic decor collection</p>
+        </div>
+        <div class="controls">
+            <span class="vid-btn active" data-src="images/1.mp4"></span>
+            <span class="vid-btn" data-src="images/2.mp4"></span>
+        </div>
+        <div class="video-container">
+            <video src="images/1.mp4" id="video-slider" loop autoplay muted ></video>
+        </div>
+    </section>
+    <!--home section ends-->
+    <h1 class="heading">
+        <span>I</span>
+        <span>t</span>
+        <span>e</span>
+        <span>m</span>
+        <span>s</span>
+    </h1>
+    <div class="row">
+        {% for product in products %}
+        <div class="col-lg-4">
+            <img class="image" src="{{product.imageURL }}">  <!--product.image.url is format  but for removing error that is defined in models.py use this format-->
+            <div class="box-element product">
+                <h6><strong>{{product.name}}</strong></h6>
+                <hr>
+                <!--we will give two attribute one for action when the btn is click(may be add or remove) and one to determine which productid is-->
+                <button  data-product={{product.id}} data-action="add" class="btn btn-outline-secondary add-btn update-cart" id="set">Add to Cart</button>
+                <a class="btn btn-outline-success" id="set" href="{{product.image.url}}">View</a>
+                <h4 style="float:right;">${{product.price|floatformat:2}}</h4>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!--Pagination-->
+    <nav class="mt-4 nav-center" aria-label="Page navigation">
+        {% if products.has_other_pages %}
+            <ul class="pagination">
+
+                {% if products.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{product.previous_page_number}}">Previous</a></li>
+                {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                {% endif %}
+
+                {% for i in products.paginator.page_range %}
+                    {% if products.number == i %}
+                    <li class="page-item active"><a class="page-link" href="#">{{i}}</a></li>
+                    {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if products.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{products.next_page_number}}">Next</a></li>
+                {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+                {% endif %}
+
+            </ul>
+        {% endif %}
+    </nav>
+
+
+    
+<!--review section starts-->
+<section class="review" id="review">
+    <h1 class="heading">
+        <span>r</span>
+        <span>e</span>
+        <span>v</span>
+        <span>i</span>
+        <span>e</span>
+        <span>w</span>
+    </h1>
+
+    <div class="swiper review-slider">
+        <div class="swiper-wrapper">
+            <div class="box swiper-slide">
+                <img src="images/pic1.jpg" alt="">
+                <h3>john deo</h3>
+                <p>Quo natus corporis reprehenderit excepturi provident quia saepe, alias, velit suscipit voluptas molestias sit vero deleniti dicta ea.</p>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="far fa-star"></i>
+                </div>
+            </div>
+
+            <div class="box swiper-slide">
+                <img src="images/pic2.jpg" alt="">
+                <h3>john deo</h3>
+                <p>Quo natus corporis reprehenderit excepturi provident quia saepe, alias, velit suscipit voluptas molestias sit vero deleniti dicta ea.</p>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="far fa-star"></i>
+                </div>
+            </div>
+
+            <div class="box swiper-slide">
+                <img src="images/pic3.jpeg" alt="">
+                <h3>john deo</h3>
+                <p>Quo natus corporis reprehenderit excepturi provident quia saepe, alias, velit suscipit voluptas molestias sit vero deleniti dicta ea.</p>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="far fa-star"></i>
+                </div>
+            </div>
+
+            <div class="box swiper-slide">
+                <img src="images/pic4.jpg" alt="">
+                <h3>john deo</h3>
+                <p>Quo natus corporis reprehenderit excepturi provident quia saepe, alias, velit suscipit voluptas molestias sit vero deleniti dicta ea.</p>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="far fa-star"></i>
+                </div>
+            </div>
+    
+            <div class="box swiper-slide">
+                <img src="images/pic5.jpg" alt="">
+                <h3>john deo</h3>
+                <p>Quo natus corporis reprehenderit excepturi provident quia saepe, alias, velit suscipit voluptas molestias sit vero deleniti dicta ea.</p>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="far fa-star"></i>
+                </div>
+            </div>
+        
+            <div class="box swiper-slide">
+                <img src="images/pic6.jpg" alt="">
+                <h3>john deo</h3>
+                <p>Quo natus corporis reprehenderit excepturi provident quia saepe, alias, velit suscipit voluptas molestias sit vero deleniti dicta ea.</p>
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="far fa-star"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--review section ends-->
+
+{% endblock content %}
+

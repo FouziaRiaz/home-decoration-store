@@ -1,0 +1,193 @@
+{% extends "store/main.html" %}
+{% load static %}
+{% block content %}
+<div class="row">
+    <!--first column-->
+    <div class="col-lg-6">
+        <div class="box-element" id="form-wrapper">
+            <form id="form">
+                <div id="user-info">
+                    <div class="form-field">
+                        <input required class="form-control" type="text" name="name" placeholder="Name..">
+                    </div>
+                    <div class="form-field">
+                        <input required class="form-control" type="email" name="email" placeholder="Email..">
+                    </div>
+                </div>
+
+                <div id="shipping-info">
+                    <hr>
+                    <p>Shipping Information</p>
+                    <hr>
+                    <div class="form-field">
+                        <input  class="form-control" type="text" name="address" placeholder="Address..">
+                    </div>
+                    <div class="form-field">
+                        <input  class="form-control" type="text" name="city" placeholder="City..">
+                    </div>
+                    <div class="form-field">
+                        <input  class="form-control" type="text" name="state" placeholder="State..">
+                    </div>
+                    <div class="form-field">
+                        <input  class="form-control" type="text" name="zipcode" placeholder="Zip code..">
+                    </div>
+                </div>
+
+                <hr>
+                <input id="form-button" class="btn btn-success btn-block" type="submit" value="Continue">
+            </form>
+        </div>
+
+        <br>
+ <!--hidden option-->
+        <div class="box-element hidden" id="payment-info">
+            <small>Paypal Options</small>
+            <div id="paypal-button-container"></div>
+            <!--<button id="make-payment">Make Payment</button>-->
+        </div>
+    </div>
+
+ <!--second column-->
+    <div class="col-lg-6">
+        <div class="box-element">
+            <a class="btn btn-outline-dark" href="{% url 'cart' %}">&#x2190;Back to Cart </a>
+            <hr>
+            <h3>Order Summary</h3>
+            <hr>
+            {% for item in items %}
+            <div class="cart-row">
+                <div style="flex:2"><img class="row-image" src="{{item.product.imageURL}}"></div>
+                <diV style="flex:2"><p>{{item.product.name}}</p></diV>
+                <div style="flex:1"><p>${{item.product.price|floatformat:2}}</p></div>
+                <div style="flex:1"><p>x2{{item.quantity}}</p></div>
+            </div>
+            {% endfor %}
+            <hr>
+            <h5>Items: {{ order.get_cart_items}}</h5>
+            <h5>Total: ${{ order.get_cart_total|floatformat:2}}</h5>
+        </div>
+    </div>
+
+</div>
+
+<!--script tag for the paypal API,this will give us access to the paypal checkout API-->
+<script src="https://www.paypal.com/sdk/js?client-id=AViausgdoGQ5YCa5-L2wt-qOzG5EejUjAHTbjHwLnQ5dpgy8KzVtX1WaEPnPzihZkej0WarceGL-rJl0&currency=USD&disable-funding=credit"></script>
+
+<!--this additional js code will create and add the buttons we need inside our empty div and also handle all payment logic when it comes time to do so-->
+<script>
+    // Render the PayPal button into #paypal-button-container
+    var total ="{{order.get_cart_total}}"
+    paypal.Buttons({
+        style:{
+            color:'blue',
+            shape:'rect',
+
+        },
+        // Set up the transaction
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: parseFloat(total).toFixed(2)
+                    }
+                }]
+            });
+        },
+        // Finalize the transaction
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(orderData) {
+                submitFormData()
+            });
+        }
+    }).render('#paypal-button-container');
+</script>
+
+<script type="text/javascript">
+ // if the product is digital then no shipping required so we remove this when shipping false but in other case it will show th shipping information. 
+    
+   
+
+//if a user is logged in, hide name and email fields
+    if(user != 'AnonymousUser'){
+        document.getElementById('user-info').innerHTML=''
+    }
+
+
+//hide continue btn and open paymet options when  btn  is clicked.
+    var form=document.getElementById('form')
+    form.addEventListener('submit',function(e){
+        e.preventDefault()
+        console.log('Form is submitted')
+        document.getElementById('form-button').classList.add("hidden")
+        document.getElementById('payment-info').classList.remove("hidden")
+    })   
+
+// now we will add an event handler to "make-payment" btn and function to trigger on submission:
+    /*document.getElementById('make-payment').addEventListener('click',function(e){
+        submitFormData()
+    })
+    */
+
+    function submitFormData(){
+        
+        console.log('Payment button clicked')
+
+/* when the payment btn is submitted we want to send 3 things  to the backened for procecssing the order
+1.cart total(we give this value in above variable total) 2.user-info 3.shipping-address:
+Now inside this function we create an object representation of both(user and shipping) */
+        var userFormData ={
+            'name':null,
+            'email':null,
+            'total':total,
+        }
+        var shippingInfo={
+            'address': null,
+            'city':null,
+            'state':null,
+            'zipcode':null,
+        }
+
+
+        shippingInfo.address=form.address.value
+        shippingInfo.city=form.city.value
+        shippingInfo.state=form.state.value
+        shippingInfo.zipcode=form.zipcode.value
+
+
+        if (user =="AnonymousUser"){
+            userFormData.name=form.name.value
+            userFormData.email=form.email.value
+        }
+        console.log("Shipping Info:", shippingInfo)
+        console.log("UserInfo:", userFormData)
+
+//now to send off our form data for process orders,create a view(in views.py) in the backened that will take form data.
+
+//now we use fetch api to send post data from our submitFormData function
+  
+        var url = '/process_order/'
+
+        fetch(url,{
+            method:'POST',
+            headers:{
+                'content-Type':'application/json',
+                'Accept': 'application/json',
+                'X-CSRFToken':csrftoken,
+            },
+            body:JSON.stringify({'form':userFormData,'shipping':shippingInfo})
+        })
+        .then((response) => {
+            return response.text()
+        })
+        .then((data) =>{
+            console.log('success:',data);
+            
+            alert('Transaction completed');
+
+            cart = {}
+            document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
+            window.location.href="{%  url 'store' %}" //redirect to home page
+        })
+    }
+</script>
+{% endblock content %}
